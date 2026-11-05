@@ -25,12 +25,8 @@
       "caption": "Type minutes and press Enter."
     },
     {
-      "file": "screenshots/en/02-countdowns.png",
-      "caption": "Independent timers, each with its own cancel button."
-    },
-    {
-      "file": "screenshots/en/03-alarm.png",
-      "caption": "When time is up: an audible and visible alarm."
+      "file": "screenshots/en/02-countdown.png",
+      "caption": "A running countdown."
     }
   ]
 }

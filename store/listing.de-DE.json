@@ -25,12 +25,8 @@
       "caption": "Minuten eingeben und Enter drücken."
     },
     {
-      "file": "screenshots/02-countdowns.png",
-      "caption": "Unabhängige Timer, jederzeit einzeln abbrechbar."
-    },
-    {
-      "file": "screenshots/03-alarm.png",
-      "caption": "Bei Ablauf: Ton und sichtbarer Alarm. Enter bestätigt."
+      "file": "screenshots/02-countdown.png",
+      "caption": "Ein laufender Countdown."
     }
   ]
 }

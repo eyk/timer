@@ -92,6 +92,7 @@ try {
   await open('hotkey');
   await expect(page.locator('.timer-card')).toHaveCount(1);
   await expect(page.locator('#minutes')).toHaveValue('');
+  await capture('02-countdown.png');
   await page.keyboard.type('113');
   await page.keyboard.press('Enter');
   await open();
