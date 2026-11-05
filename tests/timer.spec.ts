@@ -137,14 +137,16 @@ test('measured layout adapts to larger fonts without clipping the input or count
   await reopen(page);
   for (const size of [16, 20, 24, 32]) {
     await page.evaluate(value => { document.documentElement.style.fontSize = value + 'px'; }, size);
-    await expect.poll(async () => (await page.locator('.app').boundingBox())!.height).toBeGreaterThan(size * 20);
-    const card = await page.locator('.timer-card').boundingBox();
-    const digits = await page.locator('.timer-card time').boundingBox();
-    const field = await page.locator('#minutes').boundingBox();
-    const window = await page.locator('.app').boundingBox();
-    expect(digits!.x).toBeGreaterThanOrEqual(card!.x);
-    expect(digits!.x + digits!.width).toBeLessThanOrEqual(card!.x + card!.width);
-    expect(field!.y + field!.height).toBeLessThan(window!.y + window!.height);
+    // ResizeObserver/native sizing is asynchronous. Read one consistent frame and
+    // wait for the required geometry, rather than accepting the previous height.
+    await expect.poll(() => page.evaluate(minimumHeight => {
+      const card = document.querySelector('.timer-card')!.getBoundingClientRect();
+      const digits = document.querySelector('.timer-card time')!.getBoundingClientRect();
+      const field = document.querySelector('#minutes')!.getBoundingClientRect();
+      const app = document.querySelector('.app')!.getBoundingClientRect();
+      return app.height > minimumHeight && digits.left >= card.left
+        && digits.right <= card.right && field.bottom < app.bottom;
+    }, size * 20)).toBe(true);
   }
 });
 
