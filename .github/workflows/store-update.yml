@@ -1,0 +1,54 @@
+name: Submit approved Store update
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type SUBMIT to send an update to Microsoft (first release must already be live)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  submit:
+    if: inputs.confirmation == 'SUBMIT' && vars.STORE_SUBMISSION_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    environment: microsoft-store
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}
+      MSSTORE_PUBLISHER: ${{ vars.MSSTORE_PUBLISHER }}
+      MSSTORE_PUBLISHER_DISPLAY_NAME: ${{ vars.MSSTORE_PUBLISHER_DISPLAY_NAME }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run release:check
+      - run: npm run build
+      - run: npm test
+      - run: npm run native:test
+      - run: node scripts/native.mjs build --debug --no-bundle --config src-tauri/tauri.e2e.conf.json
+      - run: npm run test:desktop
+      - run: node scripts/native.mjs build --no-bundle
+      - run: npm run package:windows
+      - uses: microsoft/microsoft-store-apppublisher@cc9910a8d59f2eb55cbb83df0a3800cf3b5300e0 # v1.4
+      - name: Authenticate and submit update
+        shell: pwsh
+        env:
+          STORE_APP_ID: ${{ vars.MSSTORE_APP_ID }}
+          STORE_TENANT: ${{ secrets.PARTNER_CENTER_TENANT_ID }}
+          STORE_SELLER: ${{ secrets.PARTNER_CENTER_SELLER_ID }}
+          STORE_CLIENT: ${{ secrets.PARTNER_CENTER_CLIENT_ID }}
+          STORE_SECRET: ${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}
+        run: |
+          foreach ($value in @($env:STORE_APP_ID,$env:STORE_TENANT,$env:STORE_SELLER,$env:STORE_CLIENT,$env:STORE_SECRET)) {
+            if (!$value) { throw 'Store account configuration is incomplete.' }
+          }
+          msstore reconfigure --tenantId $env:STORE_TENANT --sellerId $env:STORE_SELLER --clientId $env:STORE_CLIENT --clientSecret $env:STORE_SECRET
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $packages = @(Get-ChildItem artifacts/windows/*.msix)
+          if ($packages.Count -ne 1) { throw 'Expected exactly one Store package.' }
+          msstore publish . --appId $env:STORE_APP_ID --inputFile $packages[0].FullName
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

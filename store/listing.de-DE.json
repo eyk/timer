@@ -1,0 +1,36 @@
+{
+  "title": "Eyk Timer",
+  "shortDescription": "Minuten eingeben. Enter. Fertig.",
+  "description": "Ein Timer für kurze Wege. Öffnen, eine Zahl von 1 bis 999 eingeben und Enter drücken. Das Fenster verschwindet, der Timer läuft weiter. Bei Ablauf gibt es einen Ton und einen sichtbaren Alarm. Enter bestätigt.\n\nBis zu zehn unabhängige Timer. Jederzeit über den angezeigten Tastaturkurzbefehl oder die Sanduhr im Infobereich wieder öffnen. Beim Darüberfahren zeigt die Sanduhr die verbleibende Zeit des nächsten Timers.\n\nKeine Konten, Werbung oder Nutzungsanalyse. Keine Voreinstellungen und kein Einstellungsdialog. Timer bleiben nur für die aktuelle Sitzung erhalten. Der Computer muss eingeschaltet und wach sein; nach Standby wird ein abgelaufener Timer beim Aufwachen erkannt.",
+  "features": [
+    "Direkte Minuteneingabe mit der Tastatur",
+    "Bis zu zehn unabhängige Timer",
+    "Akustischer und sichtbarer Alarm",
+    "Globaler Tastaturkurzbefehl und Sanduhr im Infobereich"
+  ],
+  "releaseNotes": "Version 1.0.0: die erste Windows-Veröffentlichung.",
+  "category": "Utilities & tools",
+  "price": "Free",
+  "searchTerms": [
+    "Timer",
+    "Countdown",
+    "Minuten",
+    "Pause",
+    "Tastatur"
+  ],
+  "systemRequirements": "Windows 10 Version 2004 oder neuer, x64, Microsoft Edge WebView2 Runtime. Getestet unter Windows 11 x64.",
+  "screenshots": [
+    {
+      "file": "screenshots/01-minutes.png",
+      "caption": "Minuten eingeben und Enter drücken."
+    },
+    {
+      "file": "screenshots/02-countdowns.png",
+      "caption": "Unabhängige Timer, jederzeit einzeln abbrechbar."
+    },
+    {
+      "file": "screenshots/03-alarm.png",
+      "caption": "Bei Ablauf: Ton und sichtbarer Alarm. Enter bestätigt."
+    }
+  ]
+}

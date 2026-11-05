@@ -1,0 +1,39 @@
+{
+  "name": "timer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "tauri": "tauri",
+    "desktop": "node scripts/native.mjs dev",
+    "installer": "node scripts/native.mjs build --bundles nsis",
+    "native:test": "node scripts/native.mjs test",
+    "test": "playwright test",
+    "release:check": "node scripts/check-release.mjs",
+    "test:desktop:build": "node scripts/native.mjs build --debug --no-bundle --config src-tauri/tauri.e2e.conf.json",
+    "test:desktop": "node scripts/test-desktop.mjs",
+    "screenshots": "node scripts/test-desktop.mjs --screenshots",
+    "package:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/package-windows.ps1"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.9.0",
+    "vite": "^7.0.0"
+  },
+  "description": "A minimal keyboard-first Windows timer.",
+  "author": "Walter Seethaler"
+}

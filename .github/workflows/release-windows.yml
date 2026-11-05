@@ -1,0 +1,62 @@
+name: Prepare Windows release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}
+      MSSTORE_PUBLISHER: ${{ vars.MSSTORE_PUBLISHER }}
+      MSSTORE_PUBLISHER_DISPLAY_NAME: ${{ vars.MSSTORE_PUBLISHER_DISPLAY_NAME }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run release:check
+      - run: npm run build
+      - run: npm test
+      - run: npm run native:test
+      - run: node scripts/native.mjs build --debug --no-bundle --config src-tauri/tauri.e2e.conf.json
+      - run: npm run test:desktop
+      - run: npm run installer
+      - name: Package MSIX
+        shell: pwsh
+        run: |
+          if ($env:MSSTORE_PACKAGE_NAME -and $env:MSSTORE_PUBLISHER -and $env:MSSTORE_PUBLISHER_DISPLAY_NAME) {
+            npm run package:windows
+          } else {
+            npm run package:windows -- -LocalIdentity
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: timer-windows
+          path: |
+            artifacts/windows/
+            store/
+          if-no-files-found: error
+
+      - name: Publish tagged GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Tag and package version differ.' }
+          $installer = "artifacts/windows/Eyk-Timer-$version-windows-x64.exe"
+          Copy-Item -LiteralPath "src-tauri/target/release/bundle/nsis/Eyk Timer_$($version)_x64-setup.exe" -Destination $installer
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installer).Hash.ToLowerInvariant()
+          "$hash  $([IO.Path]::GetFileName($installer))" | Set-Content artifacts/windows/SHA256SUMS.txt -Encoding ascii
+          gh release create $env:GITHUB_REF_NAME $installer artifacts/windows/SHA256SUMS.txt --verify-tag --title "Eyk Timer $version" --notes-file store/RELEASE-NOTES.md
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
