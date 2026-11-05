@@ -8,7 +8,7 @@
     "Akustischer und sichtbarer Alarm",
     "Globaler Tastaturkurzbefehl und Sanduhr im Infobereich"
   ],
-  "releaseNotes": "Version 1.0.1: vereinfachter Fenstertitel und kompakte Website.",
+  "releaseNotes": "Version 1.0.1: vereinfachter Fenstertitel und automatisches helles/dunkles Design entsprechend Windows.",
   "category": "Utilities & tools",
   "price": "Free",
   "searchTerms": [

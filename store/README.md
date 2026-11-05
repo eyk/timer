@@ -1,6 +1,6 @@
 # Windows release
 
-Version 1.0.1 is distributed through GitHub; Microsoft Store submission remains separate and is not authorized yet. The app follows Windows language preferences (German/English, English fallback). The window title is Timer, and both app and website follow system/browser light/dark appearance without a theme control. The website uses German for a German browser language and English otherwise; navigation lists EN before DE. The diagonal product image combines two genuine native captures of the same timer state. Store listings are in `listing.de-DE.json` and `listing.en-US.json`; screenshots are genuine Windows captures on a neutral 1920 × 1080 canvas, without marketing overlays.
+Version 1.0.1 is distributed through GitHub; Microsoft Store publication is pending. The app follows Windows language preferences (German/English, English fallback). The window title is Timer, and both app and website follow system/browser light/dark appearance without a theme control. The website uses German for a German browser language and English otherwise; navigation lists EN before DE. The diagonal product image combines two genuine native captures of the same timer state. Store listings are in `listing.de-DE.json` and `listing.en-US.json`; screenshots are genuine Windows captures on a neutral 1920 × 1080 canvas, without marketing overlays.
 
 Use `assets/300x300.png` as the optional Store tile icon. The other assets are package logos.
 
@@ -35,10 +35,10 @@ Failure policy: audio, tray, sizing and window-operation failures are logged and
 
 1. Register in [Partner Center](https://storedeveloper.microsoft.com/), reserve an MSIX app name, and copy the package identity **Name**, **Publisher** and **PublisherDisplayName** from Product identity. Keep the chosen display name aligned with the listing and app.
 2. Set `MSSTORE_PACKAGE_NAME`, `MSSTORE_PUBLISHER` and `MSSTORE_PUBLISHER_DISPLAY_NAME` as environment variables locally, or repository variables in GitHub Actions. Run `npm run package:windows` without `-LocalIdentity`. Microsoft signs the package after certification; no self-signed certificate is included or installed by these scripts.
-3. Create the public repository, enable Issues, and replace the pending support reference in `privacy.md` with its actual URL. Use https://eyk.github.io/timer/en/privacy.html (German: /de/privacy.html) as the privacy URL and enter that URL and the repository's Issues URL in the Store listing.
+3. Use https://eyk.github.io/timer/en/privacy.html (German: /de/privacy.html) as the privacy URL and https://github.com/eyk/timer/issues for support in the Store listing.
 4. Test the final Store-identity package with Windows App Certification Kit and on supported Windows versions. Complete the age-rating and availability forms, review `listing.de-DE.json`, and upload the MSIX and screenshots. The first submission is done manually in Partner Center.
 
-No Store identity, repository URL, credentials, name reservation or certification result is invented by this checkout. The public repository is https://github.com/eyk/timer; the product website is https://eyk.github.io/timer/. Store registration has not been performed.
+The publisher account is verified and Eyk Timer is reserved. The package identity and Store ID are configured in GitHub repository variables; credentials are not tracked. The public repository is https://github.com/eyk/timer; the product website is https://eyk.github.io/timer/.
 
 ## Pipelines
 
