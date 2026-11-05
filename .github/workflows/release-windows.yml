@@ -9,7 +9,7 @@ jobs:
   package:
     permissions:
       contents: write
-    runs-on: windows-latest
+    runs-on: windows-2022 # WebView2 automation: actions/runner-images#14738
     timeout-minutes: 40
     env:
       MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}

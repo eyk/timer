@@ -42,6 +42,8 @@ No Store identity, repository URL, credentials, name reservation or certificatio
 
 ## Pipelines
 
+Windows jobs use the explicit `windows-2022` image because the current Windows 2025 runner has a reported WebView2 automation regression ([upstream issue](https://github.com/actions/runner-images/issues/14738)). This affects the CI test host, not the supported desktop Windows versions or the app’s Evergreen Runtime requirement. Revisit when upstream is resolved.
+
 - `windows.yml`: automatic frontend, Rust and isolated native desktop checks on Windows.
 - `release-windows.yml`: manual, tested NSIS/MSIX artifact preparation. Missing Store identity produces only a clearly named local-validation MSIX. A version tag publishes the verified Windows installer to GitHub Releases. It never submits to Microsoft.
 - `store-update.yml`: future updates only, after the first release is live. Requires the `microsoft-store` GitHub environment with a required reviewer, variable `STORE_SUBMISSION_ENABLED=true`, and the explicit input `SUBMIT`. Leave disabled until publication is authorized. Run it from `main` at the reviewed commit.

@@ -12,7 +12,7 @@ jobs:
   submit:
     if: inputs.confirmation == 'SUBMIT' && vars.STORE_SUBMISSION_ENABLED == 'true' && github.ref == 'refs/heads/main'
     environment: microsoft-store
-    runs-on: windows-latest
+    runs-on: windows-2022 # WebView2 automation: actions/runner-images#14738
     timeout-minutes: 40
     env:
       MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}
