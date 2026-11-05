@@ -26,6 +26,7 @@ struct Runtime {
     presentation_retry: Option<(u64, f64, f64)>,
     hidden_applied: bool,
     shown_serial: u64,
+    dark: bool,
     stopping: bool,
     last_tooltip: String,
     tray_visible: bool,
@@ -49,6 +50,7 @@ struct TimerView {
 #[serde(rename_all = "camelCase")]
 struct Snapshot {
     language: &'static str,
+    theme: &'static str,
     timers: Vec<TimerView>,
     sampled_at_ms: u64,
     revision: u64,
@@ -102,6 +104,7 @@ fn snapshot(state: &Runtime, now: u64) -> Snapshot {
     let c = &state.controller;
     Snapshot {
         language: language::current(),
+        theme: if state.dark { "dark" } else { "light" },
         timers: c
             .timers
             .items
@@ -146,8 +149,15 @@ fn apply_effect<T: PartialEq>(
 // All window effects run on the main thread, never under the timer mutex.
 fn reconcile(app: &AppHandle, force_publish: bool) -> Result<(), String> {
     let shared = app.state::<AppState>();
+    let dark = app
+        .get_webview_window("main")
+        .and_then(|window| window.theme().ok())
+        .map(|theme| theme == tauri::Theme::Dark);
     let (data, mut tooltip, mut tray_visible, mut hidden, retrying) = {
-        let state = shared.lock();
+        let mut state = shared.lock();
+        if let Some(dark) = dark {
+            state.dark = dark;
+        }
         (
             snapshot(&state, clock::now_ms()),
             state.last_tooltip.clone(),
@@ -496,6 +506,12 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
+            if let tauri::WindowEvent::ThemeChanged(_) = event {
+                if let Some(view) = window.app_handle().get_webview_window(window.label()) {
+                    platform::style_caption(&view);
+                }
+                post_reconcile(window.app_handle(), true);
+            }
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
                 let app = window.app_handle();
@@ -633,6 +649,7 @@ mod runtime_tests {
         for required in [
             "core:window:allow-is-visible",
             "core:window:allow-current-monitor",
+            "core:window:allow-set-theme",
             "core:app:allow-identifier",
         ] {
             assert!(permissions.iter().any(|value| value == required));

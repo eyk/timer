@@ -1,6 +1,6 @@
 [package]
 name = "timer"
-version = "1.0.0"
+version = "1.0.1"
 description = "A quiet, keyboard-first timer."
 authors = ["Walter Seethaler"]
 edition = "2021"

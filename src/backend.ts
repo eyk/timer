@@ -4,6 +4,7 @@ import { listen } from '@tauri-apps/api/event';
 export interface TimerItem { id: number; remainingMs: number; ringing: boolean }
 export interface TimerState {
   language: import('./i18n').Language;
+  theme: 'light' | 'dark';
   timers: TimerItem[];
   sampledAtMs: number; // Native elapsed-clock reference, not a Unix/calendar timestamp.
   revision: number;

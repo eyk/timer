@@ -31,6 +31,7 @@ Installers are written to `src-tauri/target/release/bundle/nsis/`.
 [Download for Windows](https://github.com/eyk/timer/releases/latest) · [Website](https://eyk.github.io/timer/)
 
 The direct installer is unsigned; Windows may show a security prompt.
+The app follows Windows light/dark appearance automatically, without a theme switch.
 The app follows your preferred Windows language (German or English, with English fallback).
 See [Windows release](store/README.md) for MSIX packaging, tests and Store assets.
 

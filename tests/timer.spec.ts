@@ -28,7 +28,7 @@ test('native titlebar is not duplicated; empty caret sits half a digit right of 
   await expect(input).toHaveValue('');
   await expect(page.getByRole('button')).toHaveCount(0);
   await expect(page.locator('footer')).toHaveText(`Version ${version}`);
-  await expect(page.locator('header')).toHaveText('Eyk Timer');
+  await expect(page.locator('header')).toHaveText('Timer');
   const empty = await inputCenter(page);
   expect(empty.width).toBeGreaterThan(40);
   expect(empty.width).toBeLessThan(65);
@@ -97,7 +97,9 @@ test('no intermediate timer card is rendered on Enter; alarm acknowledgement pre
 });
 
 test('calendar corrections do not change the remaining-time display', async ({ page }) => {
-  await page.clock.install();
+  // Freeze elapsed time before opening the app so host load cannot consume an extra second.
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:01:00Z'));
   await openApp(page);
   await page.keyboard.type('5');
   await page.keyboard.press('Enter');
@@ -234,4 +236,18 @@ test.describe('English and fallback', () => {
     await expect(page.getByRole('button', {name:'Cancel timer'})).toHaveCount(1);
     await expect(page.locator('html')).toHaveAttribute('lang','en');
   });
+});
+
+
+test('system color preference updates the timer without a theme control', async ({ page }) => {
+  await page.emulateMedia({colorScheme:'light'}); await openApp(page);
+  await expect(page.locator('.app')).toHaveCSS('background-color','rgb(247, 247, 247)');
+  await page.keyboard.type('19');await page.keyboard.press('Enter');await reopen(page);
+  await page.emulateMedia({colorScheme:'dark'});
+  await expect(page.locator('.app')).toHaveCSS('background-color','rgb(27, 27, 27)');
+  await expect(page.locator('.timer-card')).toHaveCSS('background-color','rgb(43, 43, 43)');
+  await expect(page.locator('#minutes')).toBeFocused();
+  await expect(page.getByRole('button')).toHaveCount(1);
+  await page.emulateMedia({colorScheme:'light'});
+  await expect(page.locator('.app')).toHaveCSS('background-color','rgb(247, 247, 247)');
 });

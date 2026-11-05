@@ -1,6 +1,6 @@
 # Windows release
 
-Version 1.0.0 is distributed through GitHub; Microsoft Store submission remains separate and is not authorized yet. The app follows Windows language preferences (German/English, English fallback). Store listings are in `listing.de-DE.json` and `listing.en-US.json`; screenshots are genuine Windows captures on a neutral 1920 × 1080 canvas, without marketing overlays.
+Version 1.0.1 is distributed through GitHub; Microsoft Store submission remains separate and is not authorized yet. The app follows Windows language preferences (German/English, English fallback). The window title is Timer, and both app and website follow system/browser light/dark appearance without a theme control. The website uses German for a German browser language and English otherwise; navigation lists EN before DE. The diagonal product image combines two genuine native captures of the same timer state. Store listings are in `listing.de-DE.json` and `listing.en-US.json`; screenshots are genuine Windows captures on a neutral 1920 × 1080 canvas, without marketing overlays.
 
 Use `assets/300x300.png` as the optional Store tile icon. The other assets are package logos.
 

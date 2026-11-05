@@ -17,13 +17,14 @@ const now = () => performance.now();
 document.body.classList.add('browser-preview');
 const header = document.createElement('header');
 header.className = 'preview-titlebar';
-header.innerHTML = '<img src="/timer.svg" alt=""><span>Eyk Timer</span>';
+header.innerHTML = '<img src="/timer.svg" alt=""><span>Timer</span>';
 document.body.append(header);
 
 function snapshot(): TimerState {
   const sampledAtMs = now();
   return {
     timers: timers.map(timer => ({ id: timer.id, remainingMs: Math.max(0, timer.deadline - sampledAtMs), ringing: timer.ringing })),
+    theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     language: preferredLanguage(navigator.languages), sampledAtMs, revision, openSerial, visible, guardRemainingMs: Math.max(0, guardUntil - sampledAtMs), shortcut: null, error: null,
   };
 }
@@ -88,3 +89,5 @@ mockIPC((command, payload) => {
 const reopen = () => { if (!visible) { advance(); visible = true; openSerial++; revision++; publish(); } };
 window.addEventListener('focus', reopen);
 document.addEventListener('pointerdown', event => { if ((event.target as Element).closest('.rest')) reopen(); });
+
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', publish);

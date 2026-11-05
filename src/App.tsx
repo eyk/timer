@@ -11,6 +11,7 @@ export default function App() {
   const language = state?.language ?? preferredLanguage(navigator.languages);
   const text = messages(language);
   document.documentElement.lang = language;
+  document.documentElement.dataset.theme = state?.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   const [minutes, setMinutes] = useState('');
   const [error, setError] = useState('');
   const input = useRef<HTMLInputElement>(null);

@@ -3,7 +3,7 @@
 Maintain a small, reliable timer whose immediate keyboard interaction stays simple.
 
 <project-information>
-A Windows desktop timer built with Tauri 2, React, TypeScript, Vite and Rust. The timer engine runs independently of the UI. The app is offline, with no accounts or telemetry. The release version is 1.0.0. German and English follow the Windows language preferences; other platforms are not implemented.
+A Windows desktop timer built with Tauri 2, React, TypeScript, Vite and Rust. The timer engine runs independently of the UI. The app is offline, with no accounts or telemetry. The release version is 1.0.1. German and English follow the Windows language preferences; other platforms are not implemented.
 </project-information>
 
 <project-structure>
@@ -35,7 +35,7 @@ Generated and ignored: node_modules/ (JavaScript dependencies), src-tauri/target
 - Center entered digits; place the empty caret at the right edge of an imaginary centered digit.
 - Stack independent countdowns above the input, using equally large minutes-and-seconds text and an individual cancel button.
 - Keep timers running while the window is hidden; make expiry audible and visible, and let Enter acknowledge expired timers without stopping others.
-- Keep the grayscale window compact and non-maximizable, with native window controls and a separated version/shortcut status bar.
+- Keep the grayscale window compact and non-maximizable, with native window controls, the title Timer, a separated version/shortcut status bar and automatic system light/dark appearance without a switch.
 - Show the hourglass in the notification area only while timers exist; clicking reopens the app, and the tooltip shows only the next countdown, updated each second.
 - Prioritize bug fixes, security and compatibility; additions must preserve the core interaction without setup decisions or extra steps.
 - Avoid presets, remembered input, duplicate controls and explanatory interface text.

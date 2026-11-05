@@ -14,6 +14,12 @@ Types of Changes:
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-05
+
+- `Changed` the app window title to Timer while keeping Eyk Timer as the installed product name.
+- `Added` automatic light/dark appearance following Windows, including native titlebar updates, without an app theme switch.
+- `Changed` the product website to a compact layout with automatic light/dark appearance and German for German browser languages, English otherwise.
+
 ## [1.0.0] - 2026-11-05
 
 - `Fixed` recoverable audio/tray/window failures stopping all timers; added native alarm-window fallback and unified the brief acknowledgement guard for keys, clicks and close.
@@ -30,5 +36,7 @@ Types of Changes:
 
 <!-- Record future changes under Unreleased; move them into a dated version section when released. -->
 
-[Unreleased]: https://github.com/eyk/timer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/eyk/timer/compare/v1.0.1...HEAD
 [1.0.0]: https://github.com/eyk/timer/releases/tag/v1.0.0
+
+[1.0.1]: https://github.com/eyk/timer/releases/tag/v1.0.1

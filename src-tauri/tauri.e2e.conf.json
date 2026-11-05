@@ -13,7 +13,8 @@
             "core:event:allow-unlisten",
             "core:window:allow-is-visible",
             "core:window:allow-current-monitor",
-            "core:app:allow-identifier"
+            "core:app:allow-identifier",
+            "core:window:allow-set-theme"
           ]
         }
       ]

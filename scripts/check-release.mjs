@@ -17,7 +17,8 @@ assert.equal(config.app.windows[0].maximizable, false);
 assert.equal(config.app.windows[0].visible, false);
 const listing = await json('../store/listing.de-DE.json');
 assert.equal(config.productName, 'Eyk Timer');
-assert.equal(config.app.windows[0].title, 'Eyk Timer');
+assert.equal(config.app.windows[0].title, 'Timer');
+assert.equal(config.app.windows[0].theme, null);
 assert.ok(listing.description.length > 0 && listing.description.length <= 10000);
 async function png(file, width, height, exact = true) {
   const data = await readFile(new URL(file, import.meta.url));

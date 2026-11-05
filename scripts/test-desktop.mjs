@@ -45,9 +45,9 @@ const open = async (method = 'instance') => {
   await expect.poll(() => command('plugin:window|is_visible', { label: 'main' })).toBe(true);
   await expect(page.locator('#minutes')).toBeFocused();
 };
-const capture = async (name) => {
+const capture = async (name, dark = false) => {
   if (!screenshots) return;
-  await new Promise((resolve, reject) => execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts/capture-window.ps1'), '-ProcessId', String(app.pid), '-Output', path.join(output, name), ...(name === '02-countdowns.png' ? ['-WindowOutput', path.join(root, 'website/assets', 'timer-' + language + '.png')] : [])], { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout)) : resolve()));
+  await new Promise((resolve, reject) => execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts/capture-window.ps1'), '-ProcessId', String(app.pid), '-Output', path.join(output, dark ? name.replace('.png','-dark.png') : name), ...(name === '02-countdowns.png' ? ['-WindowOutput', path.join(root, 'website/assets', 'timer-' + language + (dark ? '-dark' : '') + '.png')] : [])], { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout)) : resolve()));
 };
 const closeWindow = () => new Promise((resolve, reject) => execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts/capture-window.ps1'), '-ProcessId', String(app.pid), '-Action', 'Close'], { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout)) : resolve()));
 try {
@@ -67,7 +67,16 @@ try {
   await command('plugin:window|current_monitor', { label: 'main' });
   await assert.rejects(() => command('plugin:path|resolve_directory', { directory: 1, path: '' }), /not allowed|denied|permission/i);
   console.log('PASS: E2E-only inspection APIs work; unrelated core APIs remain denied and production grants only event subscription.');
-  if (screenshots) await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const [theme, background] of [['light', 'rgb(247, 247, 247)'], ['dark', 'rgb(27, 27, 27)']]) {
+    await command('plugin:window|set_theme', { label: 'main', value: theme });
+    assert.equal((await command('get_state')).theme, theme);
+    await expect(page.locator('.app')).toHaveCSS('background-color', background);
+  }
+  await command('plugin:window|set_theme', { label: 'main', value: null });
+  await command('get_state');
+  console.log('PASS: native theme changes reach the actual WebView content; system theme restored.');
+
+  if (screenshots) { await page.emulateMedia({ reducedMotion: 'reduce' }); await command('plugin:window|set_theme', { label: 'main', value: 'light' }); await command('get_state'); }
   await expect(page.locator('#minutes')).toBeFocused();
   await expect(page.locator('#minutes')).toHaveValue('');
   const { version } = JSON.parse(await (await import('node:fs/promises')).readFile(path.join(root, 'package.json'), 'utf8'));
@@ -89,7 +98,33 @@ try {
   await expect(page.locator('.timer-card')).toHaveCount(2);
   await page.evaluate(() => { Date.now = () => 0; });
   await expect(page.locator('.timer-card time').last()).toHaveText(/11[23]:[0-5][0-9]/);
-  await capture('02-countdowns.png');
+  if (screenshots) {
+    // Freeze only incoming view snapshots while capturing the same real countdown
+    // in both native themes. The engine and all personal timers keep running.
+    const captured = await command('get_state');
+    await page.evaluate(state => {
+      window.capturedTimerState = state;
+      const callbacks = window.__TAURI_INTERNALS__.callbacks;
+      const saved = new Map(callbacks);
+      for (const [id, callback] of saved) callbacks.set(id, data => {
+        if (data?.event !== 'timer-state') return callback(data);
+        if (data.payload.theme !== window.capturedTimerState.theme) {
+          window.capturedTimerState = { ...window.capturedTimerState, theme: data.payload.theme };
+          return callback({ ...data, payload: window.capturedTimerState });
+        }
+      });
+      window.restoreTimerSnapshots = () => { for (const [id, callback] of saved) if (callbacks.has(id)) callbacks.set(id, callback); };
+    }, captured);
+    try {
+      await capture('02-countdowns.png');
+      await command('plugin:window|set_theme', { label: 'main', value: 'dark' });
+      const darkState = await command('get_state');
+      assert.equal(darkState.theme, 'dark');
+      await expect(page.locator('.app')).toHaveCSS('background-color', 'rgb(27, 27, 27)');
+      await capture('02-countdowns.png', true);
+      await command('plugin:window|set_theme', { label: 'main', value: null });
+    } finally { await page.evaluate(() => window.restoreTimerSnapshots()); }
+  }
   const state = await command('get_state');
   await command('cancel_timer', { id: state.timers[1].id });
   await expect(page.locator('.timer-card')).toHaveCount(1);

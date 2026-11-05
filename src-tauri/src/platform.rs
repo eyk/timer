@@ -87,7 +87,11 @@ pub fn style_caption(window: &WebviewWindow) {
     #[cfg(windows)]
     if let Ok(handle) = window.hwnd() {
         use windows_sys::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWA_CAPTION_COLOR};
-        let gray: u32 = 0x00e7e7e7;
+        let gray: u32 = if window.theme().ok() == Some(tauri::Theme::Dark) {
+            0x00252525
+        } else {
+            0x00e7e7e7
+        };
         // Unsupported on older Windows: retain the normal native caption color.
         unsafe {
             DwmSetWindowAttribute(
