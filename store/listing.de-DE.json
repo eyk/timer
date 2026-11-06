@@ -1,14 +1,18 @@
 {
   "title": "Eyk Timer",
-  "shortDescription": "Minuten eingeben. Enter. Fertig.",
-  "description": "Ein Timer für kurze Wege. Öffnen, eine Zahl von 1 bis 999 eingeben und Enter drücken. Das Fenster verschwindet, der Timer läuft weiter. Bei Ablauf gibt es einen Ton und einen sichtbaren Alarm. Enter bestätigt.\n\nBis zu zehn unabhängige Timer. Jederzeit über den angezeigten Tastaturkurzbefehl oder die Sanduhr im Infobereich wieder öffnen. Beim Darüberfahren zeigt die Sanduhr die verbleibende Zeit des nächsten Timers.\n\nKeine Konten, Werbung oder Nutzungsanalyse. Keine Voreinstellungen und kein Einstellungsdialog. Timer bleiben nur für die aktuelle Sitzung erhalten. Der Computer muss eingeschaltet und wach sein; nach Standby wird ein abgelaufener Timer beim Aufwachen erkannt.",
+  "shortDescription": "Simpler Timer ohne Schnickschnack.",
+  "description": "Minuten eingeben, Enter, fertig. Das Fenster minimiert sich in den Infobereich der Taskleiste und öffnet sich beim Alarm.",
   "features": [
-    "Direkte Minuteneingabe mit der Tastatur",
-    "Bis zu zehn unabhängige Timer",
-    "Akustischer und sichtbarer Alarm",
-    "Globaler Tastaturkurzbefehl und Sanduhr im Infobereich"
+    "Timer öffnen mit Strg+Umschalt+F11",
+    "1–999 Minuten tippen und mit Enter starten",
+    "Maus über die Sanduhr zeigt die Restzeit bis zum nächsten Alarm. Linksklick öffnet den Timer.",
+    "Bis zu zehn Timer, einzeln abbrechbar",
+    "Enter beendet den Alarm und blendet das Fenster aus",
+    "Hell oder dunkel nach Systemeinstellung",
+    "Offline, ohne Konto",
+    "Updates halten den Timer zuverlässig am Laufen. Neue Funktionen kommen nur dazu, wenn sie nötig sind."
   ],
-  "releaseNotes": "Version 1.0.1: vereinfachter Fenstertitel und automatisches helles/dunkles Design entsprechend Windows.",
+  "releaseNotes": "Version 1.0.2 aktualisiert die Dokumentation und den Store-Auftritt.",
   "category": "Utilities & tools",
   "price": "Free",
   "searchTerms": [

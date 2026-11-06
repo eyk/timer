@@ -45,9 +45,46 @@ const open = async (method = 'instance') => {
   await expect.poll(() => command('plugin:window|is_visible', { label: 'main' })).toBe(true);
   await expect(page.locator('#minutes')).toBeFocused();
 };
-const capture = async (name, dark = false) => {
+const runScreenshotScript = (script, args) => new Promise((resolve, reject) => {
+  execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts', script), ...args],
+    { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout || error.message)) : resolve());
+});
+const captureSplit = async (name, websiteOutput) => {
   if (!screenshots) return;
-  await new Promise((resolve, reject) => execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts/capture-window.ps1'), '-ProcessId', String(app.pid), '-Output', path.join(output, dark ? name.replace('.png','-dark.png') : name), ...(name === '02-countdowns.png' ? ['-WindowOutput', path.join(root, 'website/assets', 'timer-' + language + (dark ? '-dark' : '') + '.png')] : [])], { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout)) : resolve()));
+
+  // Render the same real timer state in both themes while the engine keeps running.
+  const { timers } = await command('get_state');
+  await page.evaluate(timers => {
+    const callbacks = window.__TAURI_INTERNALS__.callbacks;
+    const saved = new Map(callbacks);
+    for (const [id, callback] of saved) callbacks.set(id, data => {
+      if (data?.event !== 'timer-state') return callback(data);
+      // Preserve the live revision and theme so the view accepts the update.
+      return callback({ ...data, payload: { ...data.payload, timers } });
+    });
+    window.restoreTimerSnapshots = () => {
+      for (const [id, callback] of saved) if (callbacks.has(id)) callbacks.set(id, callback);
+    };
+  }, timers);
+  const capturePath = profile + '-' + path.parse(name).name;
+  const light = capturePath + '-light.png';
+  const dark = capturePath + '-dark.png';
+  try {
+    for (const [theme, background, file] of [['light', 'rgb(247, 247, 247)', light], ['dark', 'rgb(27, 27, 27)', dark]]) {
+      await command('plugin:window|set_theme', { label: 'main', value: theme });
+      await command('get_state');
+      await expect(page.locator('.app')).toHaveCSS('background-color', background);
+      await runScreenshotScript('capture-window.ps1', ['-ProcessId', String(app.pid), '-Output', file]);
+    }
+    await runScreenshotScript('compose-screenshot.ps1', [
+      '-Light', light, '-Dark', dark, '-Output', path.join(output, name),
+      ...(websiteOutput ? ['-WebsiteOutput', websiteOutput] : []),
+    ]);
+  } finally {
+    await page.evaluate(() => window.restoreTimerSnapshots());
+    await command('plugin:window|set_theme', { label: 'main', value: null });
+    await command('get_state');
+  }
 };
 const closeWindow = () => new Promise((resolve, reject) => execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts/capture-window.ps1'), '-ProcessId', String(app.pid), '-Action', 'Close'], { shell: false, windowsHide: true }, (error, stdout, stderr) => error ? reject(new Error(stderr || stdout)) : resolve()));
 try {
@@ -76,7 +113,7 @@ try {
   await command('get_state');
   console.log('PASS: native theme changes reach the actual WebView content; system theme restored.');
 
-  if (screenshots) { await page.emulateMedia({ reducedMotion: 'reduce' }); await command('plugin:window|set_theme', { label: 'main', value: 'light' }); await command('get_state'); }
+  if (screenshots) await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('#minutes')).toBeFocused();
   await expect(page.locator('#minutes')).toHaveValue('');
   const { version } = JSON.parse(await (await import('node:fs/promises')).readFile(path.join(root, 'package.json'), 'utf8'));
@@ -85,47 +122,20 @@ try {
     const monitor = await command('plugin:window|current_monitor', { label: 'main' });
     assert.equal(monitor.name.toLowerCase(), process.env.TIMER_MONITOR.toLowerCase());
   }
-  await page.keyboard.type('19');
-  await capture('01-minutes.png');
+  await page.keyboard.type('13');
+  await captureSplit('01-minutes.png');
   await page.keyboard.press('Enter');
   await expect.poll(() => command('plugin:window|is_visible', { label: 'main' })).toBe(false);
   await open('hotkey');
   await expect(page.locator('.timer-card')).toHaveCount(1);
   await expect(page.locator('#minutes')).toHaveValue('');
-  await capture('02-countdown.png');
+  await captureSplit('02-countdown.png', path.join(root, 'website/assets', 'timer-' + language + '.png'));
   await page.keyboard.type('113');
   await page.keyboard.press('Enter');
   await open();
   await expect(page.locator('.timer-card')).toHaveCount(2);
   await page.evaluate(() => { Date.now = () => 0; });
   await expect(page.locator('.timer-card time').last()).toHaveText(/11[23]:[0-5][0-9]/);
-  if (screenshots) {
-    // Freeze only incoming view snapshots while capturing the same real countdown
-    // in both native themes. The engine and all personal timers keep running.
-    const captured = await command('get_state');
-    await page.evaluate(state => {
-      window.capturedTimerState = state;
-      const callbacks = window.__TAURI_INTERNALS__.callbacks;
-      const saved = new Map(callbacks);
-      for (const [id, callback] of saved) callbacks.set(id, data => {
-        if (data?.event !== 'timer-state') return callback(data);
-        if (data.payload.theme !== window.capturedTimerState.theme) {
-          window.capturedTimerState = { ...window.capturedTimerState, theme: data.payload.theme };
-          return callback({ ...data, payload: window.capturedTimerState });
-        }
-      });
-      window.restoreTimerSnapshots = () => { for (const [id, callback] of saved) if (callbacks.has(id)) callbacks.set(id, callback); };
-    }, captured);
-    try {
-      await capture('02-countdowns.png');
-      await command('plugin:window|set_theme', { label: 'main', value: 'dark' });
-      const darkState = await command('get_state');
-      assert.equal(darkState.theme, 'dark');
-      await expect(page.locator('.app')).toHaveCSS('background-color', 'rgb(27, 27, 27)');
-      await capture('02-countdowns.png', true);
-      await command('plugin:window|set_theme', { label: 'main', value: null });
-    } finally { await page.evaluate(() => window.restoreTimerSnapshots()); }
-  }
   const state = await command('get_state');
   await command('cancel_timer', { id: state.timers[1].id });
   await expect(page.locator('.timer-card')).toHaveCount(1);
@@ -179,7 +189,6 @@ try {
   const withNewTimer = await command('get_state');
   assert.equal(withNewTimer.timers.length, beforeStart.timers.length + 1);
   await command('cancel_timer', { id: withNewTimer.timers.at(-1).id });
-  await capture('03-alarm.png');
   const guarded = await command('get_state');
   await sleep(guarded.guardRemainingMs + 30);
   await page.keyboard.press('Enter');

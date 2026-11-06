@@ -1,6 +1,6 @@
 # Windows release
 
-Version 1.0.1 is distributed through GitHub; Microsoft Store publication is pending. The app follows Windows language preferences (German/English, English fallback). The window title is Timer, and both app and website follow system/browser light/dark appearance without a theme control. The website uses German for a German browser language and English otherwise; navigation lists EN before DE. The diagonal product image combines two genuine native captures of the same timer state. Store listings are in `listing.de-DE.json` and `listing.en-US.json`; screenshots are genuine Windows captures on a neutral 1920 × 1080 canvas, without marketing overlays.
+Eyk Timer is available through GitHub and the Microsoft Store. The app follows Windows language preferences (German/English, English fallback). The window title is Timer, and both app and website follow system/browser light/dark appearance without a theme control. The website uses German for a German browser language and English otherwise; navigation lists EN before DE. Each Store listing uses two screenshots, entering minutes and one running timer. Each combines genuine light and dark Windows captures of the same state on a 1920 × 1080 canvas. The website and README use the cropped countdown. Store listings are in `listing.de-DE.json` and `listing.en-US.json`.
 
 Use `assets/300x300.png` as the optional Store tile icon. The other assets are package logos.
 
@@ -18,6 +18,8 @@ npm run screenshots
 npm run installer
 npm run package:windows -- -LocalIdentity
 ```
+
+Run the screenshot command with `TIMER_LANGUAGE=en` for English captures.
 
 Desktop checks use a separate application identity and never stop personal timers. Two staggered real one-minute timers verify the registered global shortcut, native hiding/reopening, cancellation, a deliberately delayed alarm presentation, guarded Enter without a conditional skip, starting another timer during an alarm, and native close acknowledgement. They briefly play the alarm. Inspection APIs are exercised only in the E2E build; unrelated APIs must remain denied. Browser tests additionally cover calendar-clock corrections, idle/hidden render counts, and measured layout at 100–200% font sizes. Rust tests cover effect ordering, a deterministic cross-thread expiry during an old presentation, closing before presentation, aligned scheduler waits, injected audio/worker failures, and production capability isolation. Held Enter/Escape are checked separately in the browser.
 

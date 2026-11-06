@@ -14,6 +14,11 @@ Types of Changes:
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-06
+
+- `Changed` the website branding and hourglass, shortened the README, and added a specification and architecture guide.
+- `Changed` the Store listing copy and screenshots in English and German.
+
 ## [1.0.1] - 2026-11-05
 
 - `Changed` the app window title to Timer while keeping Eyk Timer as the installed product name.
@@ -36,7 +41,8 @@ Types of Changes:
 
 <!-- Record future changes under Unreleased; move them into a dated version section when released. -->
 
-[Unreleased]: https://github.com/eyk/timer/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/eyk/timer/compare/v1.0.2...HEAD
 [1.0.0]: https://github.com/eyk/timer/releases/tag/v1.0.0
 
 [1.0.1]: https://github.com/eyk/timer/releases/tag/v1.0.1
+[1.0.2]: https://github.com/eyk/timer/releases/tag/v1.0.2

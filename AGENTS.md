@@ -3,11 +3,14 @@
 Maintain a small, reliable timer whose immediate keyboard interaction stays simple.
 
 <project-information>
-A Windows desktop timer built with Tauri 2, React, TypeScript, Vite and Rust. The timer engine runs independently of the UI. The app is offline, with no accounts or telemetry. The release version is 1.0.1. German and English follow the Windows language preferences; other platforms are not implemented.
+A Windows desktop timer built with Tauri 2, React, TypeScript, Vite and Rust. The timer engine runs independently of the UI. The app is offline, with no accounts or telemetry. The current build version is 1.0.2. German and English follow the Windows language preferences; other platforms are not implemented.
 </project-information>
 
 <project-structure>
 ├── .github/workflows/  # Automated Windows tests, package builds and gated Store updates
+├── docs/              # Platform-independent specification and architecture
+│   ├── ARCHITECTURE.md # Shared core, platform boundaries and verification
+│   └── SPEC.md         # Required behavior and acceptance criteria
 ├── public/            # Hourglass SVG source used by the app and package icons
 ├── scripts/           # Local native launcher, desktop checks and Windows packaging
 ├── src/               # React interface and Tauri command boundary

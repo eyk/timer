@@ -6,22 +6,20 @@ a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
 header, main, footer { width: min(100%, 840px); margin-inline: auto; padding: 24px; }
 header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 18px; }
-.brand img { width: 22px; height: 22px; }
+.brand img { width: 18px; height: 18px; flex: none; }
 nav { display: flex; gap: 16px; font-size: 14px; }
 nav a[aria-current] { font-weight: 650; text-decoration: none; }
 main { display: grid; grid-template-columns: 1fr 270px; align-items: center; gap: 48px; padding-block: 24px; }
 h1 { font-size: clamp(28px, 4vw, 36px); line-height: 1.3; font-weight: 400; letter-spacing: -.025em; margin: 0 0 28px; }
+.downloads { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.direct { font-size: 14px; color: var(--muted); }
 .download { display: inline-block; padding: 13px 20px; border-radius: 6px; color: var(--button-text); background: var(--button); font-size: 15px; font-weight: 550; text-decoration: none; }
 .download:hover { background: var(--hover); }
-.shot { margin: 0; position: relative; }
+.shot { margin: 0; }
 .shot img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 10px 28px #00000018; }
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 14px; }
 footer div { display: flex; flex-wrap: wrap; gap: 18px; }
 .legal { display: block; max-width: 720px; line-height: 1.7; }
 .legal h1 { font-size: 28px; }
-@media (prefers-color-scheme: dark) { :root { --bg: #191919; --fg: #ebebeb; --muted: #b6b6b6; --button: #e9e9e9; --button-text: #202020; --hover: #fff; } .brand img { filter: brightness(0) invert(1); } }
+@media (prefers-color-scheme: dark) { :root { --bg: #191919; --fg: #ebebeb; --muted: #b6b6b6; --button: #e9e9e9; --button-text: #202020; --hover: #fff; } }
 @media (max-width: 620px) { header, main, footer { padding: 20px; } main { grid-template-columns: 1fr; gap: 30px; } h1 { font-size: 30px; margin-bottom: 22px; } .shot { width: min(230px, 100%); margin-inline: auto; } footer { padding-top: 16px; } }
-
-.shot .dark { position: absolute; inset: 0; height: 100%; clip-path: polygon(0 0, 100% 0, 100% 100%); box-shadow: none; }
-.split-edge { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.split-edge line { stroke: #808080; stroke-width: 1; vector-effect: non-scaling-stroke; }

@@ -4,6 +4,10 @@ Set-StrictMode -Version Latest
 $timerRoot = Split-Path $PSScriptRoot -Parent
 $timerPackage = Get-Content (Join-Path $timerRoot 'package.json') -Raw | ConvertFrom-Json
 $timerVersion = "$($timerPackage.version).0"
+$timerExecutable = Join-Path $timerRoot 'src-tauri/target/release/timer.exe'
+if ([Diagnostics.FileVersionInfo]::GetVersionInfo($timerExecutable).ProductVersion -ne $timerPackage.version) {
+    throw "Build the release executable for version $($timerPackage.version) before packaging."
+}
 $timerName = $env:MSSTORE_PACKAGE_NAME
 $timerPublisher = $env:MSSTORE_PUBLISHER
 $timerDisplayName = $env:MSSTORE_PUBLISHER_DISPLAY_NAME
@@ -27,7 +31,7 @@ if (Test-Path $timerStage) {
     Remove-Item -LiteralPath $timerResolved -Recurse -Force
 }
 New-Item -ItemType Directory -Force "$timerStage\Assets", $timerOutput | Out-Null
-Copy-Item -LiteralPath (Join-Path $timerRoot 'src-tauri\target\release\timer.exe') -Destination "$timerStage\Timer.exe"
+Copy-Item -LiteralPath $timerExecutable -Destination "$timerStage\Timer.exe"
 Copy-Item -LiteralPath (Join-Path $timerRoot 'LICENSE') -Destination "$timerStage\LICENSE.txt"
 Copy-Item -LiteralPath (Join-Path $timerRoot 'store\THIRD-PARTY-NOTICES.txt') -Destination "$timerStage\THIRD-PARTY-NOTICES.txt"
 foreach ($timerAsset in @('Square44x44Logo.png','Square150x150Logo.png','StoreLogo.png')) {

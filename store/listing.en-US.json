@@ -1,14 +1,18 @@
 {
   "title": "Eyk Timer",
-  "shortDescription": "Type minutes. Press Enter. Done.",
-  "description": "A small Windows timer. Open, type 1–999 minutes, press Enter. The window disappears while your countdown keeps running. When time is up, an audible and visible alarm brings you back. Press Enter to acknowledge.\n\nUp to ten independent timers. Reopen using the displayed keyboard shortcut or the hourglass in the notification area. Hover to see the next countdown.\n\nNo accounts, ads or analytics. No presets or settings dialog. Timers last for the current session. An overdue alarm is delivered when your computer wakes from sleep.",
+  "shortDescription": "Simple timer. No fuss.",
+  "description": "Type the minutes, press Enter, done. The window minimizes to the taskbar’s notification area and reopens when the alarm goes off.",
   "features": [
-    "Immediate keyboard entry",
-    "Up to ten independent timers",
-    "Audible and visible alarms",
-    "Global shortcut and hourglass in the notification area"
+    "Open the timer with Ctrl+Shift+F11",
+    "Type 1–999 minutes and press Enter to start",
+    "Hover over the hourglass to see the time until the next alarm. Left-click to open the timer.",
+    "Up to ten timers, each cancellable",
+    "Press Enter to stop the alarm and hide the window",
+    "Light or dark, follows your system setting",
+    "Offline, no account needed",
+    "The timer will be maintained to keep it reliable without adding unnecessary features."
   ],
-  "releaseNotes": "Version 1.0.1: simplified window title and automatic light/dark appearance following Windows.",
+  "releaseNotes": "Version 1.0.2 updates the documentation and Store listing.",
   "category": "Utilities & tools",
   "price": "Free",
   "searchTerms": [

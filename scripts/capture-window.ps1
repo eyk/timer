@@ -1,4 +1,4 @@
-param([int]$ProcessId, [string]$Output, [ValidateSet('Capture','Close','Hotkey')][string]$Action = 'Capture', [string]$Shortcut, [string]$WindowOutput)
+param([int]$ProcessId, [string]$Output, [ValidateSet('Capture','Close','Hotkey')][string]$Action = 'Capture', [string]$Shortcut)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 Add-Type @'
@@ -50,20 +50,12 @@ if ($timerDwmResult -ne 0) { $timerFrame = $timerRect }
 $timerFrameWidth = $timerFrame.Right-$timerFrame.Left
 $timerFrameHeight = $timerFrame.Bottom-$timerFrame.Top
 if ($timerFrameWidth -gt 1920 -or $timerFrameHeight -gt 1080) { throw 'Native window exceeds screenshot canvas.' }
-$timerCanvas = New-Object Drawing.Bitmap(1920,1080)
-$timerCanvasGraphics = [Drawing.Graphics]::FromImage($timerCanvas)
-$timerCanvasGraphics.Clear([Drawing.Color]::FromArgb(221,221,221))
-$timerX = [int]((1920-$timerFrameWidth)/2)
-$timerY = [int]((1080-$timerFrameHeight)/2)
-$timerDest = New-Object Drawing.Rectangle($timerX,$timerY,$timerFrameWidth,$timerFrameHeight)
 $timerSource = New-Object Drawing.Rectangle(($timerFrame.Left-$timerRect.Left),($timerFrame.Top-$timerRect.Top),$timerFrameWidth,$timerFrameHeight)
-$timerCanvasGraphics.DrawImage($timerWindow,$timerDest,$timerSource,[Drawing.GraphicsUnit]::Pixel)
-$timerCanvas.Save($Output,[Drawing.Imaging.ImageFormat]::Png)
-if ($WindowOutput) {
-    $timerCrop = $timerWindow.Clone($timerSource, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
-    try { $timerCrop.Save($WindowOutput,[Drawing.Imaging.ImageFormat]::Png) } finally { $timerCrop.Dispose() }
+$timerCrop = $timerWindow.Clone($timerSource, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+try {
+    $timerCrop.Save($Output,[Drawing.Imaging.ImageFormat]::Png)
+} finally {
+    $timerCrop.Dispose()
+    $timerGraphics.Dispose()
+    $timerWindow.Dispose()
 }
-$timerCanvasGraphics.Dispose()
-$timerCanvas.Dispose()
-$timerGraphics.Dispose()
-$timerWindow.Dispose()
