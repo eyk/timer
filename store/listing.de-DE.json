@@ -3,7 +3,7 @@
   "shortDescription": "Simpler Timer ohne Schnickschnack.",
   "description": "Minuten eingeben, Enter, fertig. Das Fenster minimiert sich in den Infobereich der Taskleiste und öffnet sich beim Alarm.",
   "features": [
-    "Timer öffnen mit Strg+Umschalt+F11",
+    "Nach dem App-Start das Timerfenster mit Strg+Umschalt+F11 wieder öffnen",
     "1–999 Minuten tippen und mit Enter starten",
     "Maus über die Sanduhr zeigt die Restzeit bis zum nächsten Alarm. Linksklick öffnet den Timer.",
     "Bis zu zehn Timer, einzeln abbrechbar",
