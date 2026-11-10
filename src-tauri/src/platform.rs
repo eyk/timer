@@ -24,38 +24,6 @@ pub fn place_startup(window: &WebviewWindow) {
     let _ = window;
 }
 
-pub fn clear_inherited_window_hotkey() {
-    #[cfg(windows)]
-    {
-        use windows_sys::Win32::Foundation::{HWND, LPARAM};
-        use windows_sys::Win32::System::Threading::{
-            GetCurrentThreadId, GetStartupInfoW, STARTF_USEHOTKEY, STARTUPINFOW,
-        };
-        use windows_sys::Win32::UI::WindowsAndMessaging::{
-            EnumThreadWindows, SendMessageW, WM_GETHOTKEY, WM_SETHOTKEY,
-        };
-
-        unsafe extern "system" fn clear(window: HWND, key: LPARAM) -> i32 {
-            if unsafe { SendMessageW(window, WM_GETHOTKEY, 0, 0) } == key {
-                unsafe { SendMessageW(window, WM_SETHOTKEY, 0, 0) };
-            }
-            1
-        }
-
-        // Explorer assigns the shortcut to the first eligible window, which can be
-        // Tauri's event-loop window. Keep the link bound in Explorer so the next
-        // press launches the single-instance handler and reopens the real window.
-        unsafe {
-            let mut startup = std::mem::zeroed::<STARTUPINFOW>();
-            GetStartupInfoW(&mut startup);
-            let key = startup.hStdInput as LPARAM;
-            if startup.dwFlags & STARTF_USEHOTKEY != 0 && key != 0 {
-                EnumThreadWindows(GetCurrentThreadId(), Some(clear), key);
-            }
-        }
-    }
-}
-
 /// The UI supplies its measured content dimensions; native code only applies monitor/frame limits.
 pub fn fit(app: &AppHandle, desired_width: f64, desired_height: f64) -> Result<(), String> {
     let window = app

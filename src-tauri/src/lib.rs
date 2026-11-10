@@ -11,13 +11,15 @@ use std::time::Duration;
 use tauri::{AppHandle, Emitter, Manager, State};
 
 const ENGINE_FAILURE: &str = "Timer-Steuerung ausgefallen. Bitte die App neu starten.";
-const SHORTCUTS: [&str; 2] = ["Ctrl+Shift+F11", "Ctrl+Shift+F10"];
+const SHORTCUTS: [(&str, &str); 2] = [
+    ("Ctrl+Shift+F11", "Ctrl+Shift+F11"),
+    ("Ctrl+Shift+F10", "Ctrl+Shift+F10"),
+];
 
 #[derive(Default)]
 struct Runtime {
     controller: Controller,
     shortcut: Option<String>,
-    shell_shortcut: bool,
     sound_on: bool,
     audio_retry: bool,
     native_retry: bool,
@@ -272,15 +274,7 @@ fn change(app: &AppHandle, action: Action) -> Result<Snapshot, String> {
     shared.changed.notify_one();
     let _ = reconcile(app, true);
     result?;
-    let (data, exit_when_idle) = {
-        let state = shared.lock();
-        let data = snapshot(&state, clock::now_ms());
-        let exit_when_idle = state.shell_shortcut && !data.visible && data.timers.is_empty();
-        (data, exit_when_idle)
-    };
-    if exit_when_idle {
-        app.exit(0);
-    }
+    let data = snapshot(&shared.lock(), clock::now_ms());
     Ok(data)
 }
 
@@ -440,16 +434,6 @@ fn worker(app: &AppHandle) {
     }
 }
 
-fn installed_launch_shortcut() -> Option<&'static str> {
-    let path = std::env::current_exe()
-        .ok()?
-        .with_file_name("launch-shortcut.txt");
-    let key = std::fs::read_to_string(path).ok()?;
-    SHORTCUTS
-        .into_iter()
-        .find(|shortcut| *shortcut == key.trim())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -491,29 +475,20 @@ pub fn run() {
                 platform::style_caption(&window);
                 window.set_icon(app.default_window_icon().expect("App icon missing").clone())?;
             }
-            if let Some(keys) = installed_launch_shortcut() {
-                // The Start menu link owns this key, including when no timer process is running.
-                platform::clear_inherited_window_hotkey();
-                let shared = app.state::<AppState>();
-                let mut state = shared.lock();
-                state.shortcut = Some(keys.into());
-                state.shell_shortcut = true;
-            } else {
-                use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
-                app.handle().plugin(
-                    tauri_plugin_global_shortcut::Builder::new()
-                        .with_handler(|app, _, event| {
-                            if event.state() == ShortcutState::Pressed {
-                                post_action(app, Action::Open);
-                            }
-                        })
-                        .build(),
-                )?;
-                for keys in SHORTCUTS {
-                    if app.global_shortcut().register(keys).is_ok() {
-                        app.state::<AppState>().lock().shortcut = Some(keys.into());
-                        break;
-                    }
+            use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
+            app.handle().plugin(
+                tauri_plugin_global_shortcut::Builder::new()
+                    .with_handler(|app, _, event| {
+                        if event.state() == ShortcutState::Pressed {
+                            post_action(app, Action::Open);
+                        }
+                    })
+                    .build(),
+            )?;
+            for (keys, label) in SHORTCUTS {
+                if app.global_shortcut().register(keys).is_ok() {
+                    app.state::<AppState>().lock().shortcut = Some(label.into());
+                    break;
                 }
             }
             let handle = app.handle().clone();
@@ -549,22 +524,8 @@ pub fn run() {
         })
         .build(tauri::generate_context!())
         .expect("Timer konnte nicht gestartet werden.")
-        .run(|app, event| match event {
-            tauri::RunEvent::ExitRequested {
-                code: Some(0), api, ..
-            } => {
-                let shared = app.state::<AppState>();
-                let state = shared.lock();
-                // A launch can arrive after an idle exit was queued.
-                if state.shell_shortcut
-                    && !state.stopping
-                    && state.controller.failure.is_none()
-                    && (state.controller.visible || !state.controller.timers.items.is_empty())
-                {
-                    api.prevent_exit();
-                }
-            }
-            tauri::RunEvent::Exit => {
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
                 let shared = app.state::<AppState>();
                 {
                     let mut state = shared.lock();
@@ -573,7 +534,6 @@ pub fn run() {
                 }
                 shared.changed.notify_one();
             }
-            _ => {}
         });
 }
 
@@ -707,7 +667,7 @@ mod keyboard_tests {
 
     #[test]
     fn shortcuts_avoid_altgr_text_input_and_debugger_reserved_f12() {
-        for keys in SHORTCUTS {
+        for (keys, _) in SHORTCUTS {
             assert!(!(keys.contains("Ctrl") && keys.contains("Alt")));
             assert!(!keys.contains("F12"));
         }

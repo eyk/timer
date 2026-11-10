@@ -5,7 +5,6 @@ Eyk / Timer is an offline countdown tool. Its core interaction is to open the ti
 | Requirement | Acceptance criterion |
 | --- | --- |
 | Start quickly | Opening the timer prepares an empty input for immediate entry. Enter one to three digits, from 1 to 999 minutes, and confirm with a single action. Invalid input starts no timer. |
-| Open with one shortcut | On Windows, the installed shortcut opens and focuses the timer when it is visible, hidden, or fully stopped. |
 | Keep out of the way | Once started, the entry view yields focus or closes where the platform supports it. Reopening shows the active timers and an empty entry field. |
 | Run independent timers | Up to ten timers can run together. Show the remaining time in minutes and seconds. Starting or cancelling one timer leaves the others running. |
 | Count elapsed time | A timer continues while the entry view is out of sight. Changing the calendar clock does not change its duration. If the device cannot alert during sleep, deliver the overdue alarm when it can. |

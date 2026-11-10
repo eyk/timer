@@ -18,8 +18,7 @@ A Windows desktop timer built with Tauri 2, React, TypeScript, Vite and Rust. Th
 │   ├── capabilities/  # Webview permissions
 │   ├── icons/         # Native app icons
 │   ├── resources/     # Alarm sound
-│   ├── src/           # Timer state, background worker and window/tray integration
-│   └── windows/       # Windows installer hooks
+│   └── src/           # Timer state, background worker and window/tray integration
 ├── store/             # Read README.md here before releases; listing, privacy, icons, screenshots
 │   ├── assets/        # MSIX package logos generated from the hourglass SVG
 │   ├── licenses/      # Original upstream license texts missing from some dependency archives

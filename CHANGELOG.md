@@ -14,8 +14,6 @@ Types of Changes:
 
 ## [Unreleased]
 
-- `Fixed` the GitHub installer so the shortcut opens the timer even when its process has stopped. The app exits when hidden and idle if Windows owns its shortcut.
-
 ## [1.0.2] - 2026-11-06
 
 - `Changed` the website branding and hourglass, shortened the README, and added a specification and architecture guide.

@@ -3,7 +3,7 @@
   "shortDescription": "Simple timer. No fuss.",
   "description": "Type the minutes, press Enter, done. The window minimizes to the taskbar’s notification area and reopens when the alarm goes off.",
   "features": [
-    "After starting the app, reopen the timer window with Ctrl+Shift+F11",
+    "Open the timer with Ctrl+Shift+F11",
     "Type 1–999 minutes and press Enter to start",
     "Hover over the hourglass to see the time until the next alarm. Left-click to open the timer.",
     "Up to ten timers, each cancellable",
